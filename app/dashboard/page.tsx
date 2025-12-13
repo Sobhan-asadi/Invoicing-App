@@ -19,7 +19,7 @@ function Dashboard() {
         <h1 className="text-5xl font-bold">Invoices</h1>
         <p>
           <Button variant="ghost" asChild>
-            <Link href="">
+            <Link href="invoices/new">
               <CirclePlus />
               Create Invoice
             </Link>
