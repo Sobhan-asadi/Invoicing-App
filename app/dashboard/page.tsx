@@ -31,7 +31,7 @@ function Dashboard() {
         <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>
           <TableRow className="">
-            <TableHead className="w-[100px] p-4 text-left">Date</TableHead>
+            <TableHead className="w-25 p-4 text-left">Date</TableHead>
             <TableHead className="p-4">Customer</TableHead>
             <TableHead className="p-4 text-left">Email</TableHead>
             <TableHead className="p-4 text-center">Status</TableHead>
