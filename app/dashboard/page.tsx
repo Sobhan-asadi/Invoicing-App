@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
 import {
   Table,
   TableBody,
@@ -9,10 +10,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+import { db } from "@/db/indext";
+import { Invoices } from "@/db/schema";
+import { cn } from "@/lib/utils";
+
 import { CirclePlus } from "lucide-react";
 import Link from "next/link";
 
-function Dashboard() {
+async function Dashboard() {
+  const results = await db.select().from(Invoices);
+
   return (
     <main className="mx-auto flex max-w-5xl flex-col items-center justify-center gap-6 text-center">
       <div className="mt-4 flex w-full items-center justify-between">
@@ -40,25 +48,60 @@ function Dashboard() {
         </TableHeader>
 
         <TableBody>
-          <TableRow>
-            <TableCell className="p-5 text-left font-medium">
-              <span>8/9/2025</span>
-            </TableCell>
-            <TableCell className="p-5 text-left">
-              <span>Paid</span>
-            </TableCell>
-            <TableCell className="p-5 text-left">
-              <span>fry@email.com</span>
-            </TableCell>
-            <TableCell className="p-5 text-center">
-              <span>
-                <Badge className="cursor-pointer">Open</Badge>
-              </span>
-            </TableCell>
-            <TableCell className="p-5 text-right">
-              <span>$250.00</span>
-            </TableCell>
-          </TableRow>
+          {results.map((item) => (
+            <TableRow key={item.id}>
+              <TableCell className="text-left">
+                <Link
+                  className="inline-block p-5 font-medium"
+                  href={`/invoices/${item.id}`}
+                >
+                  {new Date(item.createTs).toLocaleDateString()}
+                </Link>
+              </TableCell>
+              <TableCell className="text-left">
+                <Link
+                  className="inline-block p-5"
+                  href={`/invoices/${item.id}`}
+                >
+                  {item.value}
+                </Link>
+              </TableCell>
+              <TableCell className="text-left">
+                <Link
+                  className="inline-block p-5"
+                  href={`/invoices/${item.id}`}
+                >
+                  fry@email.com
+                </Link>
+              </TableCell>
+              <TableCell className="text-center">
+                <Link
+                  className="inline-block p-5"
+                  href={`/invoices/${item.id}`}
+                >
+                  <Badge
+                    className={cn(
+                      "mt-1.5 capitalize",
+                      item.status === "open" && "bg-blue-500",
+                      item.status === "paid" && "bg-green-600",
+                      item.status === "void" && "bg-zinc-700",
+                      item.status === "uncollectible" && "bg-red-500",
+                    )}
+                  >
+                    {item.status}
+                  </Badge>
+                </Link>
+              </TableCell>
+              <TableCell className="text-right">
+                <Link
+                  className="inline-block p-5"
+                  href={`/invoices/${item.id}`}
+                >
+                  ${(item.value / 100).toFixed(2)}
+                </Link>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </main>
