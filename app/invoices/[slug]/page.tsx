@@ -3,6 +3,7 @@ import { db } from "@/db/indext";
 import { Invoices } from "@/db/schema";
 import { cn } from "@/lib/utils";
 import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
 
 async function InvoicePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -11,6 +12,10 @@ async function InvoicePage({ params }: { params: Promise<{ slug: string }> }) {
     .from(Invoices)
     .where(eq(Invoices.id, slug))
     .limit(1);
+
+  if (!res) {
+    notFound();
+  }
 
   return (
     <main className="mx-auto my-12 h-full max-w-5xl p-5">
