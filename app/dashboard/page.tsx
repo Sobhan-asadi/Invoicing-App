@@ -22,11 +22,15 @@ async function Dashboard() {
   const results = await db.select().from(Invoices);
 
   return (
-    <main className="mx-auto flex max-w-5xl flex-col items-center justify-center gap-6 text-center">
+    <main className="mx-auto mb-3.5 flex max-w-5xl flex-col items-center justify-center gap-6 text-center">
       <div className="mt-4 flex w-full items-center justify-between">
         <h1 className="text-5xl font-bold">Invoices</h1>
         <p>
-          <Button variant="ghost" asChild>
+          <Button
+            variant="ghost"
+            className="flex items-center gap-2 rounded-full bg-linear-to-r from-[#6c47ff] to-[#8b6cff] px-5 py-2 text-sm font-semibold shadow-md transition-transform hover:scale-105"
+            asChild
+          >
             <Link href="invoices/new">
               <CirclePlus />
               Create Invoice

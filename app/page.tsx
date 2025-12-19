@@ -1,13 +1,8 @@
 /** @format */
-import { Button } from "@/components/ui/button";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-} from "@clerk/nextjs";
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
 
 export default function Home() {
   return (
@@ -47,8 +42,6 @@ export default function Home() {
         {/* Logged in state */}
         <SignedIn>
           <div className="flex items-center gap-4">
-            <UserButton afterSignOutUrl="/" />
-
             <Button
               asChild
               className="rounded-full bg-linear-to-r from-[#6c47ff] to-[#8b6cff] px-10 py-6 text-base font-semibold shadow-lg transition-all hover:scale-105 hover:shadow-xl"
