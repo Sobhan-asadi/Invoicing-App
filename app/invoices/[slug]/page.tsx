@@ -5,6 +5,22 @@ import { cn } from "@/lib/utils";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
+import { updatStatusAction } from "@/app/actions";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const AVAILABLE_STATUSES = [
+  { id: "open", label: "Open" },
+  { id: "paid", label: "Paid" },
+  { id: "void", label: "Void" },
+  { id: "uncollectible", label: "Uncollectible" },
+];
+
 async function InvoicePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const [res] = await db
@@ -13,59 +29,113 @@ async function InvoicePage({ params }: { params: Promise<{ slug: string }> }) {
     .where(eq(Invoices.id, slug))
     .limit(1);
 
-  if (!res) {
-    notFound();
-  }
+  if (!res) notFound();
 
   return (
-    <main className="mx-auto my-12 h-full max-w-5xl p-5">
-      <div className="mb-8 flex justify-between">
-        <h1 className="flex items-center justify-center gap-1.5 text-3xl font-bold">
-          <span> invoict</span>
-          <Badge
-            className={cn(
-              "mt-1.5",
-              res.status === "open" && "bg-blue-500",
-              res.status === "paid" && "bg-green-600",
-              res.status === "void" && "bg-zinc-700",
-              res.status === "uncollectible" && "bg-red-500",
-            )}
-          >
-            {res.status}
-          </Badge>
-        </h1>
+    <main className="min-h-screen bg-linear-to-br from-[#0f0f1c] via-[#141428] to-black px-6 py-14 text-white">
+      <div className="mx-auto max-w-5xl">
+        {/* Header */}
+        <div className="mb-10 flex flex-col gap-6 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-4">
+              <h1 className="text-4xl font-bold tracking-tight">
+                Invoice #{res.id}
+              </h1>
+
+              <Badge
+                className={cn(
+                  "px-4 py-1.5 text-sm font-semibold tracking-wide uppercase",
+                  res.status === "open" &&
+                    "bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/30",
+                  res.status === "paid" &&
+                    "bg-green-500/20 text-green-400 ring-1 ring-green-500/30",
+                  res.status === "void" &&
+                    "bg-zinc-500/20 text-zinc-300 ring-1 ring-zinc-500/30",
+                  res.status === "uncollectible" &&
+                    "bg-red-500/20 text-red-400 ring-1 ring-red-500/30",
+                )}
+              >
+                {res.status}
+              </Badge>
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-wrap gap-3">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="bg-white text-black">
+                    Change Status
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent className="w-48">
+                  {AVAILABLE_STATUSES.map((status) => (
+                    <DropdownMenuItem key={status.id} asChild>
+                      <form action={updatStatusAction}>
+                        <input type="hidden" name="id" value={res.id} />
+                        <input type="hidden" name="status" value={status.id} />
+                        <button
+                          type="submit"
+                          className="w-full text-left font-medium"
+                        >
+                          {status.label}
+                        </button>
+                      </form>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Button variant="secondary">Download PDF</Button>
+              <Button>Edit</Button>
+            </div>
+          </div>
+
+          <p className="text-5xl font-extrabold tracking-tight">
+            ${(res.value / 100).toFixed(2)}
+          </p>
+
+          {res.description && (
+            <p className="max-w-3xl text-lg text-white/70">{res.description}</p>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="grid gap-8 md:grid-cols-2">
+          {/* Details */}
+          <section className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl">
+            <h2 className="mb-6 text-xl font-bold">Invoice Details</h2>
+
+            <div className="space-y-4">
+              {[
+                ["Invoice ID", res.id],
+                ["Date", new Date(res.createTs).toLocaleDateString()],
+                ["Customer Name", res.name || "_"],
+                ["Customer Email", res.email || "-"],
+              ].map(([label, value]) => (
+                <div
+                  key={label}
+                  className="flex items-center justify-between rounded-xl bg-black/30 px-5 py-3"
+                >
+                  <span className="text-sm text-white/60">{label}</span>
+                  <span className="font-medium">{value}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Summary / Placeholder */}
+          <section className="flex flex-col justify-center rounded-3xl border border-white/10 bg-linear-to-br from-[#6c47ff]/20 to-[#8b6cff]/10 p-8">
+            <h3 className="mb-4 text-2xl font-bold">Invoice Summary</h3>
+            <p className="text-white/70">
+              This invoice reflects the total billed amount including any
+              applicable adjustments. Status updates are applied immediately and
+              tracked securely.
+            </p>
+          </section>
+        </div>
       </div>
-      <p className="mb-3 text-3xl">${(res.value / 100).toFixed(2)}</p>
-
-      <p className="mb-8 text-lg">{res.description}</p>
-
-      <h2 className="mb-4 text-lg font-bold">Billing Details</h2>
-
-      <ul className="grid gap-2">
-        <li className="flex gap-4">
-          <strong className="block w-28 shrink-0 text-sm">Invoice ID:</strong>
-          <span>{res.id}</span>
-        </li>
-
-        <li className="flex gap-4">
-          <strong className="block w-28 shrink-0 text-sm">Invoice Data:</strong>
-          <span>{new Date(res.createTs).toLocaleDateString()}</span>
-        </li>
-
-        <li className="flex gap-4">
-          <strong className="block w-28 shrink-0 text-sm">Invoice Name:</strong>
-          <span></span>
-        </li>
-
-        <li className="flex gap-4">
-          <strong className="block w-28 shrink-0 text-sm">
-            Invoice Email:
-          </strong>
-          <span></span>
-        </li>
-      </ul>
     </main>
   );
 }
-
 export default InvoicePage;
