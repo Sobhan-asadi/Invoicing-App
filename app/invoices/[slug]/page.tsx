@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
-import { updatStatusAction } from "@/app/actions";
+import { deleteInvoiceAction, updatStatusAction } from "@/app/actions";
+import { DeleteInvoiceDialog } from "@/components/DeleteInvoiceDialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 const AVAILABLE_STATUSES = [
   { id: "open", label: "Open" },
@@ -30,6 +32,7 @@ async function InvoicePage({ params }: { params: Promise<{ slug: string }> }) {
     .limit(1);
 
   if (!res) notFound();
+  console.log(res);
 
   return (
     <main className="min-h-screen bg-linear-to-br from-[#0f0f1c] via-[#141428] to-black px-6 py-14 text-white">
@@ -44,7 +47,7 @@ async function InvoicePage({ params }: { params: Promise<{ slug: string }> }) {
 
               <Badge
                 className={cn(
-                  "px-4 py-1.5 text-sm font-semibold tracking-wide uppercase",
+                  "px-6 py-1 text-sm font-semibold tracking-wide",
                   res.status === "open" &&
                     "bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/30",
                   res.status === "paid" &&
@@ -65,6 +68,7 @@ async function InvoicePage({ params }: { params: Promise<{ slug: string }> }) {
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="bg-white text-black">
                     Change Status
+                    <ChevronDown />
                   </Button>
                 </DropdownMenuTrigger>
 
@@ -86,8 +90,11 @@ async function InvoicePage({ params }: { params: Promise<{ slug: string }> }) {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Button variant="secondary">Download PDF</Button>
-              <Button>Edit</Button>
+              <form action={deleteInvoiceAction}>
+                <input type="hidden" name="id" value={res.id} />
+
+                <DeleteInvoiceDialog id={res.id} />
+              </form>
             </div>
           </div>
 
@@ -110,8 +117,8 @@ async function InvoicePage({ params }: { params: Promise<{ slug: string }> }) {
               {[
                 ["Invoice ID", res.id],
                 ["Date", new Date(res.createTs).toLocaleDateString()],
-                ["Customer Name", res.name || "_"],
-                ["Customer Email", res.email || "-"],
+                ["Customer Name", res.customerName || "_"],
+                ["Customer Email", res.customerEmail || "-"],
               ].map(([label, value]) => (
                 <div
                   key={label}

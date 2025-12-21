@@ -5,4 +5,4 @@ CREATE TABLE "invoices" (
 	"value" integer NOT NULL,
 	"description" text NOT NULL,
 	"status" "status" NOT NULL
-);
+)

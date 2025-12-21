@@ -1,5 +1,5 @@
 {
-  "id": "0e86c265-f528-4c6e-aa21-3145f4a0bd8c",
+  "id": "2a8d8c4a-67ff-4748-90fd-5993e2b7ce2a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -39,6 +39,18 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
+        },
+        "customer_name": {
+          "name": "customer_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "customer_email": {
+          "name": "customer_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},

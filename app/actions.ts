@@ -40,3 +40,20 @@ export async function updatStatusAction(formData: FormData) {
 
   redirect(`/invoices/${id}`);
 }
+
+export async function deleteInvoiceAction(formData: FormData) {
+  const idRaw = formData.get("id");
+
+  if (!idRaw) {
+    throw new Error("Missing invoice id");
+  }
+
+  const id = Number(idRaw);
+  if (isNaN(id)) {
+    throw new Error("Invalid invoice id");
+  }
+
+  await db.delete(Invoices).where(eq(Invoices.id, id));
+
+  redirect("/dashboard");
+}
