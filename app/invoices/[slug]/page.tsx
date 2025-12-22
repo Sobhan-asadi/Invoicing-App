@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 
 import { deleteInvoiceAction, updatStatusAction } from "@/app/actions";
 import { DeleteInvoiceDialog } from "@/components/DeleteInvoiceDialog";
+import PayButton from "@/components/PayButton";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -32,7 +33,6 @@ async function InvoicePage({ params }: { params: Promise<{ slug: string }> }) {
     .limit(1);
 
   if (!res) notFound();
-  console.log(res);
 
   return (
     <main className="min-h-screen bg-linear-to-br from-[#0f0f1c] via-[#141428] to-black px-6 py-14 text-white">
@@ -128,6 +128,7 @@ async function InvoicePage({ params }: { params: Promise<{ slug: string }> }) {
                   <span className="font-medium">{value}</span>
                 </div>
               ))}
+              <PayButton invoiceId={res.id} />
             </div>
           </section>
 
