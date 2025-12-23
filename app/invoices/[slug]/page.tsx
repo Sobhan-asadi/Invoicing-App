@@ -29,7 +29,7 @@ async function InvoicePage({ params }: { params: Promise<{ slug: string }> }) {
   const [res] = await db
     .select()
     .from(Invoices)
-    .where(eq(Invoices.id, slug))
+    .where(eq(Invoices.id, Number(slug)))
     .limit(1);
 
   if (!res) notFound();

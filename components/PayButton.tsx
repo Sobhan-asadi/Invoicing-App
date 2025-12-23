@@ -8,7 +8,7 @@ export default function PayButton({ invoiceId }: { invoiceId: number }) {
     const res = await createPayment(formData);
 
     if (res?.url) {
-      window.location.href = res.url; // انتقال به Stripe
+      window.location.href = res.url;
     }
   }
 
